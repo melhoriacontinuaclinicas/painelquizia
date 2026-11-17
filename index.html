@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#073a9e">
 <title>IAgora — Painel de acompanhamento</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--blue:#073b9e;--blue2:#087be8;--yellow:#ffd21a;--ink:#112b52;--muted:#647894;--line:#e0e9f5;--bg:#f1f6fd;--white:#fff;--shadow:0 12px 32px rgba(5,48,115,.09)}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #ffc400;outline-offset:2px}.header{background:linear-gradient(120deg,#05266c,#075fc7);color:#fff;padding:22px 17px 24px;border-bottom:5px solid var(--yellow)}.header-inner{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.18em;color:#ffdf4c;text-transform:uppercase}.header h1{font-size:clamp(22px,5vw,32px);margin:7px 0 5px;line-height:1.1}.header p{font-size:13px;color:#dcecff;line-height:1.5;margin:0;max-width:700px}.status-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:7px 12px;border-radius:99px;font-size:11px;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:7px}.status-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e}.wrap{max-width:1100px;margin:0 auto;padding:16px 14px 35px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.btn{border:1px solid #c9d9ed;background:#fff;color:#124782;border-radius:12px;padding:11px 14px;font-size:12px;font-weight:850;min-height:42px}.btn.primary{background:#0757b7;color:#fff;border-color:#0757b7}.btn.danger{color:#9c2632;border-color:#f0c8cc}.hidden{display:none!important}.info{border:1px solid #cfe0f4;background:#eaf4ff;padding:13px 14px;border-radius:14px;color:#355779;font-size:12px;line-height:1.5;margin-bottom:15px}.info strong{color:#134b91}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:#fff;border:1px solid var(--line);border-radius:17px;padding:15px;box-shadow:var(--shadow);min-height:100px}.metric span{display:block;color:#68809e;font-size:11px;font-weight:750;margin-bottom:8px}.metric strong{font-size:26px;line-height:1;color:#0b438d}.metric small{display:block;color:#7a8da6;font-size:10px;margin-top:6px}.section{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:13px;box-shadow:var(--shadow)}.section h2{font-size:16px;margin:0 0 12px}.barline{display:grid;grid-template-columns:minmax(112px,160px) 1fr 34px;gap:9px;align-items:center;margin:13px 0}.barlabel{font-size:12px;font-weight:800;color:#3b587b}.track{height:13px;border-radius:20px;background:#eef3fa;overflow:hidden}.fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#087be8,#ffd21a)}.barvalue{text-align:right;font-size:12px;font-weight:900;color:#1a477b}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:620px;font-size:12px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #edf1f7;vertical-align:top}th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#637994;background:#f8fafd}td{color:#304d70}.profile-tag{display:inline-block;padding:5px 8px;border-radius:99px;font-size:10px;font-weight:850;background:#edf4ff;color:#174c94}.profile-tag.auto{background:#fff2e6;color:#99501b}.profile-tag.combined{background:#fff9dd;color:#856400}.profile-tag.human{background:#e7f8ee;color:#167244}.empty{padding:22px 12px;text-align:center;color:#71849d;font-size:13px}.small-note{font-size:11px;line-height:1.5;color:#7789a0;margin:10px 0 0}.criteria{display:grid;gap:8px}.criterion{border:1px solid #e6edf6;border-radius:12px;padding:11px 12px}.criterion strong{font-size:12px;display:block;color:#224d82;margin-bottom:4px}.criterion span{font-size:11px;color:#687c96;line-height:1.45}.file-label{display:inline-flex;align-items:center;gap:7px}.footer{text-align:center;font-size:10px;color:#8a9ab0;padding:18px 0 0}@media(min-width:760px){.wrap{padding:22px 20px 40px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.section{padding:19px}.header{padding:28px 22px}.barline{grid-template-columns:170px 1fr 45px}}@media(max-width:390px){.barline{grid-template-columns:105px 1fr 31px;gap:6px}.barlabel{font-size:10px}.toolbar .btn{flex:1}.metric{padding:12px}.metric strong{font-size:23px}}
 </style></head>
@@ -28,7 +29,7 @@
   <button id="exportCsv" class="btn" type="button">Baixar relatório CSV</button>
   <button id="clearBtn" class="btn danger" type="button">Limpar painel</button>
  </div>
- <div class="info"><strong>Sincronização em Tempo Real Ativa:</strong> Todas as conclusões do quiz enviadas pelos celulares dos participantes caem automaticamente na tabela independente <code>iagora_atendimento_respostas</code> no seu Supabase e atualizam este painel a cada 5 segundos.</div>
+ <div class="info" id="infoBanner"><strong>Sincronização em Tempo Real Ativa:</strong> Todas as conclusões do quiz enviadas pelos celulares dos participantes caem automaticamente na tabela independente <code>iagora_atendimento_respostas</code> no seu Supabase e atualizam este painel a cada 5 segundos.</div>
  <section class="grid" aria-label="Indicadores principais">
   <div class="metric"><span>Respostas registradas</span><strong id="total">0</strong><small>Questionários concluídos</small></div>
   <div class="metric"><span>Atendimento Automatizado</span><strong id="autoCount">0</strong><small id="autoPct">0% do total</small></div>
@@ -46,10 +47,11 @@
  <div class="footer">IAgora · Autodiagnóstico do Perfil de Atendimento</div>
 </main>
 <script>
-const SUPABASE_URL = "https://uwcskbqwdeuitflfenpd.supabase.co";
-const SUPABASE_KEY = "sb_publishable_Ga9xq3EscJZYadHVWf5sgA_1YC09T_2";
+const SUPABASE_URL = "https://mlvdgmvmuzbcughekpiz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_04TgybpwC683g-FRmfFLBg_2qwAVVzl";
 const TABLE_NAME = "iagora_atendimento_respostas";
 const KEY = 'iagora_atendimento_results_v1';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const dimensionNames=[['acolhimento','Acolhimento e escuta'],['comunicacao','Comunicação e orientação'],['organizacao','Organização e segurança'],['colaboracao','Colaboração e tecnologia']];
 let records=[];
@@ -90,37 +92,31 @@ function readLocal(){
 
 async function fetchFromSupabase(){
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?select=*&order=completed_at.desc`, {
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
-      }
-    });
-    if(!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    records = data.map(normalizeRecord).filter(Boolean);
+    const { data, error } = await supabaseClient
+      .from(TABLE_NAME)
+      .select("*")
+      .order("completed_at", { ascending: false });
+
+    if (error) throw error;
+    records = (data || []).map(normalizeRecord).filter(Boolean);
     $('statusDot').style.background = '#22c55e';
-    $('statusText').textContent = 'Sincronizado (' + new Date().toLocaleTimeString('pt-BR') + ')';
+    $('statusDot').style.boxShadow = '0 0 8px #22c55e';
+    $('statusText').textContent = 'Conectado (' + new Date().toLocaleTimeString('pt-BR') + ')';
     render();
   } catch (err) {
     console.error("Erro ao buscar dados do Supabase:", err);
     $('statusDot').style.background = '#f59e0b';
-    $('statusText').textContent = 'Aguardando criação da tabela no Supabase';
+    $('statusDot').style.boxShadow = '0 0 8px #f59e0b';
+    $('statusText').textContent = 'Erro Supabase: ' + (err.message || err.code || 'Verifique permissões SQL');
     render();
   }
 }
 
 async function pushToSupabase(record){
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
-        "Prefer": "resolution=merge-duplicates,return=minimal"
-      },
-      body: JSON.stringify({
+    const { error } = await supabaseClient
+      .from(TABLE_NAME)
+      .upsert([{
         id: record.id,
         completed_at: record.completedAt,
         profile: record.profile,
@@ -129,10 +125,10 @@ async function pushToSupabase(record){
         dimensions: record.dimensions || [],
         answers: record.answers || [],
         payload: record
-      })
-    });
+      }], { onConflict: 'id' });
+    if (error) throw error;
   } catch(e) {
-    console.error("Falha ao enviar registro importado para o Supabase:", e);
+    console.error("Falha ao enviar registro para o Supabase:", e);
   }
 }
 
@@ -254,19 +250,20 @@ $('clearBtn').addEventListener('click',async ()=>{
   if(confirm('Apagar todos os resultados desta tabela no Supabase e neste navegador? Esta ação não pode ser desfeita.')){
     localStorage.removeItem(KEY);
     try {
-      await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?id=neq.__none__`, {
-        method: "DELETE",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`
-        }
-      });
+      await supabaseClient.from(TABLE_NAME).delete().neq('id', '__none__');
     } catch(e) {}
     records=[];
     await fetchFromSupabase();
   }
 });
 
-fetchFromSupabase();
-setInterval(fetchFromSupabase, 5000);
+// Sincroniza quaisquer respostas já salvas localmente neste navegador com o Supabase ao abrir
+(async function init(){
+  const locals = readLocal();
+  for(const r of locals){
+    await pushToSupabase(r);
+  }
+  await fetchFromSupabase();
+  setInterval(fetchFromSupabase, 5000);
+})();
 </script></body></html>
