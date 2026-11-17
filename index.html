@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#073a9e">
+<title>IAgora — Painel de acompanhamento</title>
+<style>
+:root{--blue:#073b9e;--blue2:#087be8;--yellow:#ffd21a;--ink:#112b52;--muted:#647894;--line:#e0e9f5;--bg:#f1f6fd;--white:#fff;--shadow:0 12px 32px rgba(5,48,115,.09)}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #ffc400;outline-offset:2px}.header{background:linear-gradient(120deg,#05266c,#075fc7);color:#fff;padding:22px 17px 24px;border-bottom:5px solid var(--yellow)}.header-inner{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.18em;color:#ffdf4c;text-transform:uppercase}.header h1{font-size:clamp(22px,5vw,32px);margin:7px 0 5px;line-height:1.1}.header p{font-size:13px;color:#dcecff;line-height:1.5;margin:0;max-width:700px}.status-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:7px 12px;border-radius:99px;font-size:11px;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:7px}.status-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e}.wrap{max-width:1100px;margin:0 auto;padding:16px 14px 35px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.btn{border:1px solid #c9d9ed;background:#fff;color:#124782;border-radius:12px;padding:11px 14px;font-size:12px;font-weight:850;min-height:42px}.btn.primary{background:#0757b7;color:#fff;border-color:#0757b7}.btn.danger{color:#9c2632;border-color:#f0c8cc}.hidden{display:none!important}.info{border:1px solid #cfe0f4;background:#eaf4ff;padding:13px 14px;border-radius:14px;color:#355779;font-size:12px;line-height:1.5;margin-bottom:15px}.info strong{color:#134b91}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:#fff;border:1px solid var(--line);border-radius:17px;padding:15px;box-shadow:var(--shadow);min-height:100px}.metric span{display:block;color:#68809e;font-size:11px;font-weight:750;margin-bottom:8px}.metric strong{font-size:26px;line-height:1;color:#0b438d}.metric small{display:block;color:#7a8da6;font-size:10px;margin-top:6px}.section{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:13px;box-shadow:var(--shadow)}.section h2{font-size:16px;margin:0 0 12px}.barline{display:grid;grid-template-columns:minmax(112px,160px) 1fr 34px;gap:9px;align-items:center;margin:13px 0}.barlabel{font-size:12px;font-weight:800;color:#3b587b}.track{height:13px;border-radius:20px;background:#eef3fa;overflow:hidden}.fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#087be8,#ffd21a)}.barvalue{text-align:right;font-size:12px;font-weight:900;color:#1a477b}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:620px;font-size:12px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #edf1f7;vertical-align:top}th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#637994;background:#f8fafd}td{color:#304d70}.profile-tag{display:inline-block;padding:5px 8px;border-radius:99px;font-size:10px;font-weight:850;background:#edf4ff;color:#174c94}.profile-tag.auto{background:#fff2e6;color:#99501b}.profile-tag.combined{background:#fff9dd;color:#856400}.profile-tag.human{background:#e7f8ee;color:#167244}.empty{padding:22px 12px;text-align:center;color:#71849d;font-size:13px}.small-note{font-size:11px;line-height:1.5;color:#7789a0;margin:10px 0 0}.criteria{display:grid;gap:8px}.criterion{border:1px solid #e6edf6;border-radius:12px;padding:11px 12px}.criterion strong{font-size:12px;display:block;color:#224d82;margin-bottom:4px}.criterion span{font-size:11px;color:#687c96;line-height:1.45}.file-label{display:inline-flex;align-items:center;gap:7px}.footer{text-align:center;font-size:10px;color:#8a9ab0;padding:18px 0 0}@media(min-width:760px){.wrap{padding:22px 20px 40px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.section{padding:19px}.header{padding:28px 22px}.barline{grid-template-columns:170px 1fr 45px}}@media(max-width:390px){.barline{grid-template-columns:105px 1fr 31px;gap:6px}.barlabel{font-size:10px}.toolbar .btn{flex:1}.metric{padding:12px}.metric strong{font-size:23px}}
+</style></head>
+<body>
+<header class="header">
+  <div class="header-inner">
+    <div>
+      <div class="eyebrow">Treinamento · IAgora, como vai ser?</div>
+      <h1>Painel de acompanhamento</h1>
+      <p>Autodiagnóstico do Perfil de Atendimento · sincronizado em tempo real via Supabase.</p>
+    </div>
+    <div class="status-badge">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Conectando ao Supabase...</span>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+ <div class="toolbar">
+  <button id="syncBtn" class="btn primary" type="button">🔄 Sincronizar agora</button>
+  <label class="btn file-label" for="importFile">＋ Importar resultados JSON</label><input class="hidden" id="importFile" type="file" accept=".json,application/json" multiple>
+  <button id="exportJson" class="btn" type="button">Exportar base JSON</button>
+  <button id="exportCsv" class="btn" type="button">Baixar relatório CSV</button>
+  <button id="clearBtn" class="btn danger" type="button">Limpar painel</button>
+ </div>
+ <div class="info"><strong>Sincronização em Tempo Real Ativa:</strong> Todas as conclusões do quiz enviadas pelos celulares dos participantes caem automaticamente na tabela independente <code>iagora_atendimento_respostas</code> no seu Supabase e atualizam este painel a cada 5 segundos.</div>
+ <section class="grid" aria-label="Indicadores principais">
+  <div class="metric"><span>Respostas registradas</span><strong id="total">0</strong><small>Questionários concluídos</small></div>
+  <div class="metric"><span>Atendimento Automatizado</span><strong id="autoCount">0</strong><small id="autoPct">0% do total</small></div>
+  <div class="metric"><span>Atendimento Combinado</span><strong id="combinedCount">0</strong><small id="combinedPct">0% do total</small></div>
+  <div class="metric"><span>Atendimento Humanizado</span><strong id="humanCount">0</strong><small id="humanPct">0% do total</small></div>
+ </section>
+ <section class="section"><h2>Distribuição dos perfis</h2><div id="profileChart"></div><p class="small-note">A classificação é calculada internamente a partir das dez respostas. Os critérios não aparecem durante o preenchimento do quiz.</p></section>
+ <section class="section"><h2>Média por dimensão do atendimento</h2><div id="dimensionChart"></div><p class="small-note">Percentuais calculados a partir da pontuação média de cada dimensão registrada no banco de dados.</p></section>
+ <section class="section"><h2>Histórico de respostas</h2><div class="table-wrap"><table><thead><tr><th>Código anônimo</th><th>Data e hora</th><th>Perfil</th><th>Resultado</th></tr></thead><tbody id="recordsBody"></tbody></table></div><div id="emptyState" class="empty">Nenhum resultado registrado ainda. Assim que responderem pelo celular, os dados aparecerão aqui automaticamente.</div></section>
+ <section class="section"><h2>Critérios internos de classificação</h2><div class="criteria">
+  <div class="criterion"><strong>Atendimento Automatizado</strong><span>Lógica sem acolhimento · faixa interna de 10 a 16 pontos.</span></div>
+  <div class="criterion"><strong>Atendimento Combinado</strong><span>Lógica com acolhimento · faixa interna de 17 a 23 pontos.</span></div>
+  <div class="criterion"><strong>Atendimento Humanizado</strong><span>Cuidado e foco no cuidado · faixa interna de 24 a 30 pontos.</span></div>
+ </div></section>
+ <div class="footer">IAgora · Autodiagnóstico do Perfil de Atendimento</div>
+</main>
+<script>
+const SUPABASE_URL = "https://uwcskbqwdeuitflfenpd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Ga9xq3EscJZYadHVWf5sgA_1YC09T_2";
+const TABLE_NAME = "iagora_atendimento_respostas";
+const KEY = 'iagora_atendimento_results_v1';
+
+const dimensionNames=[['acolhimento','Acolhimento e escuta'],['comunicacao','Comunicação e orientação'],['organizacao','Organização e segurança'],['colaboracao','Colaboração e tecnologia']];
+let records=[];
+const $=id=>document.getElementById(id);
+
+function normalizeRecord(r){
+  if(!r) return null;
+  const base = r.payload && typeof r.payload === 'object' ? r.payload : r;
+  const id = r.id || base.id;
+  const profile = String(r.profile || base.profile || '');
+  const score = Number(r.score ?? base.score);
+  const maxScore = Number(r.max_score ?? base.maxScore ?? 30);
+  const completedAt = r.completed_at || base.completedAt || new Date().toISOString();
+  const dimensions = Array.isArray(r.dimensions) ? r.dimensions : (Array.isArray(base.dimensions) ? base.dimensions : []);
+  const answers = Array.isArray(r.answers) ? r.answers : (Array.isArray(base.answers) ? base.answers : []);
+
+  if(!id || !Number.isFinite(score)) return null;
+  if(!['Atendimento Automatizado','Atendimento Combinado','Atendimento Humanizado'].includes(profile)) return null;
+
+  return {
+    schema: 'iagora-atendimento-v1',
+    id,
+    completedAt,
+    profile,
+    score,
+    maxScore,
+    dimensions,
+    answers
+  };
+}
+
+function readLocal(){
+  try{
+    const val=JSON.parse(localStorage.getItem(KEY)||'[]');
+    return Array.isArray(val)?val.map(normalizeRecord).filter(Boolean):[];
+  }catch(e){return[];}
+}
+
+async function fetchFromSupabase(){
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?select=*&order=completed_at.desc`, {
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if(!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    records = data.map(normalizeRecord).filter(Boolean);
+    $('statusDot').style.background = '#22c55e';
+    $('statusText').textContent = 'Sincronizado (' + new Date().toLocaleTimeString('pt-BR') + ')';
+    render();
+  } catch (err) {
+    console.error("Erro ao buscar dados do Supabase:", err);
+    $('statusDot').style.background = '#f59e0b';
+    $('statusText').textContent = 'Aguardando criação da tabela no Supabase';
+    render();
+  }
+}
+
+async function pushToSupabase(record){
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Prefer": "resolution=merge-duplicates,return=minimal"
+      },
+      body: JSON.stringify({
+        id: record.id,
+        completed_at: record.completedAt,
+        profile: record.profile,
+        score: record.score,
+        max_score: record.maxScore || 30,
+        dimensions: record.dimensions || [],
+        answers: record.answers || [],
+        payload: record
+      })
+    });
+  } catch(e) {
+    console.error("Falha ao enviar registro importado para o Supabase:", e);
+  }
+}
+
+function pct(n,d){return d?Math.round(n/d*100):0;}
+function profileClass(p){return p==='Atendimento Automatizado'?'auto':p==='Atendimento Combinado'?'combined':'human';}
+
+function render(){
+  const map=new Map();
+  [...readLocal(),...records].forEach(r=>map.set(r.id,r));
+  const all=[...map.values()].sort((a,b)=>new Date(b.completedAt)-new Date(a.completedAt));
+  const n=all.length;
+  const counts={'Atendimento Automatizado':0,'Atendimento Combinado':0,'Atendimento Humanizado':0};
+  all.forEach(r=>counts[r.profile]++);
+  $('total').textContent=n;
+  $('autoCount').textContent=counts['Atendimento Automatizado'];
+  $('combinedCount').textContent=counts['Atendimento Combinado'];
+  $('humanCount').textContent=counts['Atendimento Humanizado'];
+  $('autoPct').textContent=pct(counts['Atendimento Automatizado'],n)+'% do total';
+  $('combinedPct').textContent=pct(counts['Atendimento Combinado'],n)+'% do total';
+  $('humanPct').textContent=pct(counts['Atendimento Humanizado'],n)+'% do total';
+
+  $('profileChart').innerHTML='';
+  Object.entries(counts).forEach(([name,count])=>{
+    const row=document.createElement('div');row.className='barline';
+    const label=document.createElement('div');label.className='barlabel';label.textContent=name.replace('Atendimento ','');
+    const track=document.createElement('div');track.className='track';
+    const fill=document.createElement('div');fill.className='fill';fill.style.width=pct(count,n)+'%';
+    track.append(fill);
+    const value=document.createElement('div');value.className='barvalue';value.textContent=pct(count,n)+'%';
+    row.append(label,track,value);
+    $('profileChart').append(row);
+  });
+  if(!n)$('profileChart').innerHTML='<div class="empty">O gráfico será preenchido quando houver resultados.</div>';
+
+  const dimTotals={};
+  dimensionNames.forEach(([id,name])=>dimTotals[id]={name,sum:0,max:0});
+  all.forEach(r=>(r.dimensions||[]).forEach(d=>{
+    if(dimTotals[d.id]){
+      dimTotals[d.id].sum+=Number(d.score)||0;
+      dimTotals[d.id].max+=Number(d.max)||0;
+    }
+  }));
+  $('dimensionChart').innerHTML='';
+  Object.entries(dimTotals).forEach(([id,d])=>{
+    const val=pct(d.sum,d.max);
+    const row=document.createElement('div');row.className='barline';
+    const label=document.createElement('div');label.className='barlabel';label.textContent=d.name;
+    const track=document.createElement('div');track.className='track';
+    const fill=document.createElement('div');fill.className='fill';fill.style.width=val+'%';
+    track.append(fill);
+    const value=document.createElement('div');value.className='barvalue';value.textContent=val+'%';
+    row.append(label,track,value);
+    $('dimensionChart').append(row);
+  });
+  if(!n)$('dimensionChart').innerHTML='<div class="empty">Sem dados para calcular as médias.</div>';
+
+  $('recordsBody').innerHTML='';
+  all.forEach(r=>{
+    const tr=document.createElement('tr');
+    const date=new Date(r.completedAt);
+    const dateText=isNaN(date)?'—':date.toLocaleString('pt-BR');
+    const code=document.createElement('td');code.textContent=r.id;
+    const when=document.createElement('td');when.textContent=dateText;
+    const profile=document.createElement('td');
+    const tag=document.createElement('span');tag.className='profile-tag '+profileClass(r.profile);tag.textContent=r.profile;
+    profile.append(tag);
+    const score=document.createElement('td');score.textContent=`${r.score}/${r.maxScore||30}`;
+    tr.append(code,when,profile,score);
+    $('recordsBody').append(tr);
+  });
+  $('emptyState').classList.toggle('hidden',n>0);
+  window.__allRecords=all;
+}
+
+function download(name,text,type){
+  const blob=new Blob([text],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$('syncBtn').addEventListener('click', fetchFromSupabase);
+
+$('importFile').addEventListener('change',async e=>{
+  const files=[...e.target.files];let added=0,invalid=0;
+  for(const f of files){
+    try{
+      const raw=JSON.parse(await f.text());
+      const list=Array.isArray(raw)?raw:[raw];
+      for(const x of list){
+        const r=normalizeRecord(x);
+        if(r){
+          records.push(r);
+          await pushToSupabase(r);
+          added++;
+        }else invalid++;
+      }
+    }catch(err){invalid++;}
+  }
+  await fetchFromSupabase();
+  e.target.value='';
+  alert(`${added} resultado(s) importado(s) e sincronizado(s).${invalid?` ${invalid} inválido(s) ignorado(s).`:''}`);
+});
+
+$('exportJson').addEventListener('click',()=>download('base_iagora_atendimento.json',JSON.stringify(window.__allRecords||[],null,2),'application/json;charset=utf-8'));
+
+$('exportCsv').addEventListener('click',()=>{
+  const all=window.__allRecords||[];
+  const rows=[['codigo_anonimo','data_hora','perfil','pontuacao','pontuacao_maxima','acolhimento_escuta_pct','comunicacao_orientacao_pct','organizacao_seguranca_pct','colaboracao_tecnologia_pct']];
+  all.forEach(r=>{
+    const d={};(r.dimensions||[]).forEach(x=>d[x.id]=x.pct);
+    rows.push([r.id,r.completedAt,r.profile,r.score,r.maxScore||30,d.acolhimento??'',d.comunicacao??'',d.organizacao??'',d.colaboracao??'']);
+  });
+  const csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  download('relatorio_iagora_atendimento.csv',csv,'text/csv;charset=utf-8');
+});
+
+$('clearBtn').addEventListener('click',async ()=>{
+  if(confirm('Apagar todos os resultados desta tabela no Supabase e neste navegador? Esta ação não pode ser desfeita.')){
+    localStorage.removeItem(KEY);
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?id=neq.__none__`, {
+        method: "DELETE",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        }
+      });
+    } catch(e) {}
+    records=[];
+    await fetchFromSupabase();
+  }
+});
+
+fetchFromSupabase();
+setInterval(fetchFromSupabase, 5000);
+</script></body></html>
